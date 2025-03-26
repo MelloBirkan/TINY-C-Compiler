@@ -1,0 +1,47 @@
+/* 
+Teste para verificar os operadores lógicos AND e OR
+*/
+void main(void) {
+    int a = 0x1;  // Verdadeiro
+    int b = 0x0;  // Falso
+    int c = 0x1;  // Verdadeiro
+    
+    // Teste operador AND (&&)
+    if (a && b) {
+        writeint(0x1);  // Não deve executar
+    } else {
+        writeint(0x0);  // Deve executar
+    }
+    
+    if (a && c) {
+        writeint(0x1);  // Deve executar
+    } else {
+        writeint(0x0);  // Não deve executar
+    }
+    
+    // Teste operador OR (||)
+    if (a || b) {
+        writeint(0x1);  // Deve executar
+    } else {
+        writeint(0x0);  // Não deve executar
+    }
+    
+    if (b || b) {
+        writeint(0x1);  // Não deve executar
+    } else {
+        writeint(0x0);  // Deve executar
+    }
+    
+    // Combinação de operadores
+    if ((a && c) || b) {
+        writeint(0x1);  // Deve executar
+    } else {
+        writeint(0x0);  // Não deve executar
+    }
+    
+    if (a && (b || c)) {
+        writeint(0x1);  // Deve executar
+    } else {
+        writeint(0x0);  // Não deve executar
+    }
+} 

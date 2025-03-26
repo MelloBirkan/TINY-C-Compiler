@@ -1,0 +1,8 @@
+/* 
+Teste com erro léxico - identificador muito longo
+*/
+void main(void) {
+    int numeroMuitoLongoDemaisParaOCompilador = 0x10;  // Erro: identificador com mais de 15 caracteres
+    
+    writeint(0x1);
+} 

@@ -1,0 +1,27 @@
+/* 
+Teste para verificar o tratamento de diferentes tipos de comentários
+Este é um comentário de múltiplas linhas
+que deve ser ignorado pelo compilador
+*/
+void main(void) {
+    // Comentário de linha única
+    int a = 0x1;  // Comentário após declaração
+    
+    /*
+    Este comentário de múltiplas
+    linhas está no meio do código
+    e deve ser ignorado
+    */
+    
+    int b = 0x2;
+    
+    // Comentário antes de operação
+    a = a + b;
+    
+    /* Comentário 
+    de múltiplas linhas */ int c = 0x3;
+    
+    writeint(a);  // Deve imprimir 3
+    writeint(b);  // Deve imprimir 2
+    writeint(c);  // Deve imprimir 3
+} 

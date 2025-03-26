@@ -1,0 +1,9 @@
+/* 
+Teste com erro sintático - falta de ponto e vírgula
+*/
+void main(void) {
+    int x = 0x5
+    int y = 0x10;  // Erro: falta ponto e vírgula na linha anterior
+    
+    writeint(x);
+} 

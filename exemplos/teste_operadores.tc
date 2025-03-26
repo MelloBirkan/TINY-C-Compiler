@@ -1,0 +1,58 @@
+/* 
+Teste para verificar todos os operadores aritméticos e relacionais suportados
+*/
+void main(void) {
+    int a = 0x10;
+    int b = 0x5;
+    int resultado;
+    
+    // Operadores aritméticos
+    resultado = a + b;  // Adição
+    writeint(resultado);
+    
+    resultado = a - b;  // Subtração
+    writeint(resultado);
+    
+    resultado = a * b;  // Multiplicação
+    writeint(resultado);
+    
+    resultado = a / b;  // Divisão
+    writeint(resultado);
+    
+    // Operadores relacionais
+    if (a < b) {
+        writeint(0x1);
+    } else {
+        writeint(0x0);
+    }
+    
+    if (a <= b) {
+        writeint(0x1);
+    } else {
+        writeint(0x0);
+    }
+    
+    if (a == b) {
+        writeint(0x1);
+    } else {
+        writeint(0x0);
+    }
+    
+    if (a != b) {
+        writeint(0x1);
+    } else {
+        writeint(0x0);
+    }
+    
+    if (a > b) {
+        writeint(0x1);
+    } else {
+        writeint(0x0);
+    }
+    
+    if (a >= b) {
+        writeint(0x1);
+    } else {
+        writeint(0x0);
+    }
+} 

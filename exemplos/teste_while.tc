@@ -1,0 +1,40 @@
+/* 
+Teste para verificar estrutura de repetição while
+*/
+void main(void) {
+    int contador = 0x0;
+    int soma = 0x0;
+    
+    // Loop simples
+    while (contador < 0x5) {
+        soma = soma + contador;
+        contador = contador + 0x1;
+    }
+    
+    writeint(soma);  // Deve imprimir 10 (0xA)
+    
+    // Loop com condição que nunca é satisfeita
+    contador = 0x0;
+    while (contador > 0x5) {
+        soma = soma + 0x1;
+        contador = contador + 0x1;
+    }
+    
+    writeint(soma);  // Deve continuar como 10 (0xA)
+    
+    // Loop aninhado
+    contador = 0x0;
+    int i = 0x0;
+    soma = 0x0;
+    
+    while (i < 0x3) {
+        contador = 0x0;
+        while (contador < 0x2) {
+            soma = soma + 0x1;
+            contador = contador + 0x1;
+        }
+        i = i + 0x1;
+    }
+    
+    writeint(soma);  // Deve imprimir 6 (0x6)
+} 

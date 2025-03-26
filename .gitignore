@@ -1,0 +1,77 @@
+# Arquivos de objeto, binários e bibliotecas
+*.o
+*.ko
+*.obj
+*.elf
+*.so
+*.so.*
+*.a
+*.la
+*.lo
+*.dll
+*.dylib
+
+# Executáveis
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Arquivos de debug
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Arquivos de compilação gerados
+*.gch
+*.pch
+*.d
+
+# Arquivos específicos de Makefile
+.dep/
+*.make
+Makefile.old
+.*.swp
+
+# Arquivos de dependência e outros
+*.dep
+*.gcda
+*.gcno
+
+# Arquivos de diretórios
+bin/
+obj/
+Debug/
+Release/
+build/
+dist/
+
+# Arquivos temporários de editores
+*~
+.*.swp
+.*.swo
+*.backup
+.\#*
+\#*\#
+*.tmp
+
+# Arquivos específicos do sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs e editores
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+.project
+.cproject
+.settings/ 

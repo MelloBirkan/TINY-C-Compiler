@@ -1,0 +1,160 @@
+Compilador fase 1: Análise Léxica e Sintática
+
+O objetivo do trabalho é implementar as fases de análise léxica e sintática para a linguagem TINY-C, uma simplificação da linguagem C com as seguintes restrições:
+	•	Tipos suportados: apenas int e char.
+	•	Comandos condicionais (if) e de repetição (while).
+	•	Não suporta declaração e chamadas de funções, exceto as funções de entrada (readint) e saída (writeint).
+
+Funcionamento e interação entre Analisadores
+
+O analisador léxico atende às demandas do analisador sintático, com a interação feita por meio das funções:
+	•	consome() (sintático)
+	•	obter_atomo() (léxico)
+
+Gramática da Linguagem TINY-C (EBNF)
+
+Símbolo inicial: <program>
+
+<program> ::= void main '(' void ')' <compound_stmt>
+
+<compound_stmt> ::= '{' [<var_decl> <stmt>] '}'
+
+<var_decl> ::= <type_specifier> <var_decl_list> ';'
+
+<type_specifier> ::= int | char
+
+<var_decl_list> ::= <variable_id> {',' <variable_id>}
+
+<variable_id> ::= id ['=' <expr>]
+
+<stmt> ::= <compound_stmt> | <assig_stmt> | <cond_stmt> | <while_stmt> | readint '(' id ')' ';' | writeint '(' expr ')' ';'
+
+<assig_stmt> ::= id '=' <expr> ';'
+
+<cond_stmt> ::= if '(' expr ')' <stmt> [else <stmt>]
+
+<while_stmt> ::= while '(' expr ')' <stmt>
+
+<expr> ::= <conjunction> {'||' <conjunction>}
+
+<conjunction> ::= <comparison> {'&&' <comparison>}
+
+<comparison> ::= <sum> [<relation> <sum>]
+
+<relation> ::= '<' | '<=' | '==' | '!=' | '>' | '>='
+
+<sum> ::= <term> {('+' | '-') <term>}
+
+<term> ::= <factor> {('*' | '/') <factor>}
+
+<factor> ::= intconst | charconst | id | '(' expr ')'
+
+Especificações Léxicas
+	•	Caracteres delimitadores: espaços, quebras de linha, tabulações e retornos de carro são ignorados, mas a contagem de linhas deve ser mantida.
+	•	Comentários:
+	•	Comentário de linha única: // comentário
+	•	Comentário multilinha: /* comentário */
+Comentários devem ser repassados ao analisador sintático para serem reportados e descartados.
+	•	Identificadores:
+	•	Começam com letra ou _, seguidos por letras, dígitos ou _, limitados a 15 caracteres.
+	•	Identificadores maiores que 15 caracteres geram erro.
+Exemplo de expressão regular:
+
+letra → a|b|...|z|A|B|...|Z|_
+digito → 0|1|...|9
+id → letra(letra|digito)*
+
+Ao identificar um identificador, imprimir o lexema encontrado.
+
+	•	Palavras reservadas:
+
+char, else, if, int, main, readint, void, while, writeint
+
+(A linguagem é case-sensitive: Main ≠ main.)
+
+	•	Constantes:
+	•	Char: caracteres ASCII entre apóstrofos 'a', '0'.
+	•	Int (somente hexadecimal): notação 0x seguida por dígitos hexadecimais.
+
+hexa → A|B|C|D|E|F
+intconst → 0x(hexa|digito)+
+
+O analisador léxico deve imprimir o caractere que gerou o átomo charconst e o valor numérico decimal para intconst.
+
+Execução e Saída do Compilador
+	•	O compilador lê um arquivo fonte cujo nome é passado por linha de comando.
+	•	Deve exibir na tela a linha e a descrição dos átomos reconhecidos e o número total de linhas analisadas se o programa for sintaticamente correto.
+
+Exemplo de arquivo fonte correto:
+
+/* 
+programa le dois numeros inteiros e encontra o maior  
+*/ 
+void main ( void ) {
+    int num_1, num_2;
+    int maior;
+    readint(num_1);
+    readint(num_2);
+    if ( num_1 > num_2 )  
+        maior = num_1;
+    else
+        maior = num_2;
+    
+    writeint(maior) // imprime o maior valor 
+}
+
+Exemplo de saída do compilador:
+
+# 1:comentario
+# 4:void
+# 4:main
+# 4:abre_par
+# 4:void
+# 4:fecha_par
+# 4:abre_chaves
+# 5:int
+# 5:id | num_1
+# 5:virgula
+# 5:id | num_2
+...
+15 linhas analisadas, programa sintaticamente correto
+
+	•	Em caso de erro léxico ou sintático, uma mensagem explicativa deve ser exibida e a execução encerrada:
+
+Exemplo de erro sintático:
+
+void main ( void ) {
+    writeint(maior ;
+}
+
+Saída com erro:
+
+# 1:void
+# 1:main
+# 1:abre_par
+# 1:void
+# 1:fecha_par
+# 1:abre_chaves
+# 3:writeint
+# 3:abre_par
+# 3:id | maior
+# 3:erro sintatico, esperado [)] encontrado [;]
+
+Observações importantes:
+	•	O trabalho deve ser bem documentado.
+	•	Pode ser feito em grupo de até 2 alunos.
+	•	Entregar arquivo Readme.txt explicando o trabalho realizado.
+	•	Linguagem utilizada: C
+	•	Compilador: MinGW com VSCode
+	•	Comando de compilação:
+
+gcc -Wall -Wno-unused-result -g -Og compilador.c -o compilador
+
+	•	Penalizações:
+	•	Programa que não compila ou executa recebe nota 0.
+	•	Warnings na compilação ou finalização diferente de 0 descontam 1 ponto por warning.
+	•	Código confuso, mal organizado ou não comentado também será penalizado.
+
+⸻
+
+Essas são as principais informações do PDF fornecido. Se precisar de mais detalhes ou esclarecimentos específicos sobre alguma parte do trabalho, estou à disposição!

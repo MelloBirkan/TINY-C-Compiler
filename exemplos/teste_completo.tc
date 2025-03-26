@@ -1,0 +1,45 @@
+/* 
+Teste completo que combina várias funcionalidades da linguagem TINY-C
+Programa que implementa um algoritmo simples de cálculo de fatorial
+*/
+void main(void) {
+    // Declaração e inicialização de variáveis
+    int numero;
+    int fatorial = 0x1;
+    int contador;
+    int opcao = 0x1;
+    
+    while (opcao != 0x0) {
+        // Leitura do número
+        writeint(0xA);  // Código para "Entre com um número:"
+        readint(numero);
+        
+        // Verificação de número negativo
+        if (numero < 0x0) {
+            writeint(0xB);  // Código para "Número inválido"
+        } else {
+            // Cálculo do fatorial
+            contador = numero;
+            fatorial = 0x1;
+            
+            if (numero == 0x0 || numero == 0x1) {
+                fatorial = 0x1;
+            } else {
+                while (contador > 0x0) {
+                    fatorial = fatorial * contador;
+                    contador = contador - 0x1;
+                }
+            }
+            
+            // Exibir resultado
+            writeint(fatorial);
+        }
+        
+        // Perguntar se deseja continuar
+        writeint(0xC);  // Código para "Deseja continuar? (1-Sim, 0-Não):"
+        readint(opcao);
+    }
+    
+    // Mensagem de despedida
+    writeint(0xD);  // Código para "Programa finalizado"
+} 

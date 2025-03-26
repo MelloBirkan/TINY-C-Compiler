@@ -1,0 +1,46 @@
+/* 
+Teste para verificar expressões complexas e precedência de operadores
+*/
+void main(void) {
+    int a = 0x5;
+    int b = 0x3;
+    int c = 0x2;
+    int d = 0xA;
+    int resultado;
+    
+    // Expressões aritméticas complexas
+    resultado = a + b * c;  // 5 + (3 * 2) = 11
+    writeint(resultado);
+    
+    resultado = (a + b) * c;  // (5 + 3) * 2 = 16
+    writeint(resultado);
+    
+    resultado = a * b + c * d;  // (5 * 3) + (2 * 10) = 35
+    writeint(resultado);
+    
+    resultado = a * (b + c) * d;  // 5 * (3 + 2) * 10 = 250
+    writeint(resultado);
+    
+    // Expressões relacionais complexas
+    if (a > b && c < d) {
+        writeint(0x1);  // Deve imprimir 1
+    }
+    
+    if (a < b || c < d) {
+        writeint(0x1);  // Deve imprimir 1
+    }
+    
+    // Expressões mistas
+    if ((a + b) > (c + d)) {
+        writeint(0x1);  // Não deve imprimir
+    } else {
+        writeint(0x0);  // Deve imprimir 0
+    }
+    
+    // Expressão com múltiplos operadores lógicos
+    if ((a > b || c > d) && (a > c && b > 0x0)) {
+        writeint(0x1);  // Deve imprimir 1
+    } else {
+        writeint(0x0);  // Não deve imprimir
+    }
+} 

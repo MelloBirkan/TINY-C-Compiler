@@ -1,0 +1,59 @@
+/* 
+Teste para verificar estruturas condicionais aninhadas (if-else)
+*/
+void main(void) {
+    int a = 0x5;
+    int b = 0xA;
+    int c = 0xF;
+    int resultado = 0x0;
+    
+    // Teste de if-else simples
+    if (a > b) {
+        resultado = 0x1;
+    } else {
+        resultado = 0x2;
+    }
+    
+    writeint(resultado);  // Deve imprimir 2
+    
+    // If aninhados
+    if (a < b) {
+        if (b < c) {
+            resultado = 0x3;
+        } else {
+            resultado = 0x4;
+        }
+    } else {
+        if (a < c) {
+            resultado = 0x5;
+        } else {
+            resultado = 0x6;
+        }
+    }
+    
+    writeint(resultado);  // Deve imprimir 3
+    
+    // If sem else
+    resultado = 0x0;
+    if (a < b) {
+        resultado = 0x7;
+    }
+    
+    writeint(resultado);  // Deve imprimir 7
+    
+    // If-else com blocos compostos
+    if (a > b) {
+        int temp = a;
+        a = b;
+        b = temp;
+        resultado = 0x8;
+    } else {
+        int temp = c;
+        c = b;
+        b = temp;
+        resultado = 0x9;
+    }
+    
+    writeint(resultado);  // Deve imprimir 9
+    writeint(b);          // Deve imprimir 15 (0xF)
+} 

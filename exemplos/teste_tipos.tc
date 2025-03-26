@@ -1,0 +1,18 @@
+/* 
+Teste para verificar os tipos de dados suportados e inicialização de variáveis
+*/
+void main(void) {
+    int num1 = 0x1A;
+    int num2 = 0xFF;
+    int resultado;
+    char c1 = 'a';
+    char c2 = '0';
+    
+    num1 = 0xABC;
+    num2 = 0x123;
+    c1 = 'z';
+    
+    resultado = num1 + num2;
+    
+    writeint(resultado);
+} 

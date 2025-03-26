@@ -1,0 +1,30 @@
+/* 
+Teste para verificar operações de entrada (readint) e saída (writeint)
+*/
+void main(void) {
+    int a;
+    int b;
+    int soma;
+    int produto;
+    
+    // Leitura de dois valores
+    readint(a);
+    readint(b);
+    
+    // Operações e saída
+    soma = a + b;
+    writeint(soma);
+    
+    produto = a * b;
+    writeint(produto);
+    
+    // Sequência de operações de leitura e escrita
+    int c;
+    readint(c);
+    
+    if (c > 0x0) {
+        writeint(c);
+    } else {
+        writeint(0x0);
+    }
+} 

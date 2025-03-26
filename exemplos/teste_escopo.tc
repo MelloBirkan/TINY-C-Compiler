@@ -1,0 +1,30 @@
+/* 
+Teste para verificar o escopo de variáveis em blocos compostos
+*/
+void main(void) {
+    int x = 0x1;
+    
+    {
+        int y = 0x2;
+        int x = 0x3;  // Variável com mesmo nome em escopo interno
+        
+        writeint(x);  // Deve imprimir 3
+        writeint(y);  // Deve imprimir 2
+    }
+    
+    writeint(x);  // Deve imprimir 1 (valor original)
+    
+    // Teste de escopo em estruturas condicionais
+    if (x == 0x1) {
+        int z = 0x4;
+        writeint(z);  // Deve imprimir 4
+    }
+    
+    // Teste de escopo em loops
+    int i = 0x0;
+    while (i < 0x3) {
+        int temp = i * 0x2;
+        writeint(temp);  // Deve imprimir 0, 2, 4
+        i = i + 0x1;
+    }
+} 
