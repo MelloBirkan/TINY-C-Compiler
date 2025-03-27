@@ -125,8 +125,7 @@ TInfoAtomo obter_atomo() {
     }
 
     buffer_lexema[i] = '\0';
-    strncpy(info.lexema, buffer_lexema, 15);
-    info.lexema[15] = '\0'; // Garante que o lexema termina com '\0'
+    snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
 
     // Verifica se é palavra reservada ou identificador
     info.atomo = verifica_palavra_reservada(buffer_lexema);
@@ -156,8 +155,7 @@ TInfoAtomo obter_atomo() {
 
           buffer_lexema[i] = '\0';
           info.atomo = INTCONST;
-          strncpy(info.lexema, buffer_lexema, 15);
-          info.lexema[15] = '\0';
+          snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
 
           // Converte string para valor inteiro
           sscanf(buffer_lexema, "%x", &info.valor_int);
@@ -173,8 +171,7 @@ TInfoAtomo obter_atomo() {
         // É um zero decimal
         buffer_lexema[i] = '\0';
         info.atomo = INTCONST;
-        strncpy(info.lexema, buffer_lexema, 15);
-        info.lexema[15] = '\0';
+        snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
         info.valor_int = 0;
 
         // Se não for início de outro token, consome
@@ -195,8 +192,7 @@ TInfoAtomo obter_atomo() {
 
       buffer_lexema[i] = '\0';
       info.atomo = INTCONST;
-      strncpy(info.lexema, buffer_lexema, 15);
-      info.lexema[15] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
       info.valor_int = atoi(buffer_lexema);
       return info;
     }
@@ -209,10 +205,7 @@ TInfoAtomo obter_atomo() {
     if (proximo_char != EOF && proximo_char != '\'') {
       info.valor_char = proximo_char;
       info.atomo = CHARCONST;
-      strncpy(info.lexema, "'", 1);
-      info.lexema[1] = proximo_char;
-      info.lexema[2] = '\'';
-      info.lexema[3] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "'%c'", proximo_char);
 
       proximo_char = fgetc(arquivo_fonte);
 
@@ -305,8 +298,7 @@ TInfoAtomo obter_atomo() {
     // Operador de divisão
     else {
       info.atomo = DIVIDE;
-      strncpy(info.lexema, "/", 1);
-      info.lexema[1] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "/");
       return info;
     }
   }
@@ -317,13 +309,11 @@ TInfoAtomo obter_atomo() {
     proximo_char = fgetc(arquivo_fonte);
     if (proximo_char == '=') {
       info.atomo = MENOR_IGUAL;
-      strncpy(info.lexema, "<=", 2);
-      info.lexema[2] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "<=");
       proximo_char = fgetc(arquivo_fonte);
     } else {
       info.atomo = MENOR;
-      strncpy(info.lexema, "<", 1);
-      info.lexema[1] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "<");
     }
     return info;
 
@@ -331,13 +321,11 @@ TInfoAtomo obter_atomo() {
     proximo_char = fgetc(arquivo_fonte);
     if (proximo_char == '=') {
       info.atomo = MAIOR_IGUAL;
-      strncpy(info.lexema, ">=", 2);
-      info.lexema[2] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), ">=");
       proximo_char = fgetc(arquivo_fonte);
     } else {
       info.atomo = MAIOR;
-      strncpy(info.lexema, ">", 1);
-      info.lexema[1] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), ">");
     }
     return info;
 
@@ -345,13 +333,11 @@ TInfoAtomo obter_atomo() {
     proximo_char = fgetc(arquivo_fonte);
     if (proximo_char == '=') {
       info.atomo = IGUAL_IGUAL;
-      strncpy(info.lexema, "==", 2);
-      info.lexema[2] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "==");
       proximo_char = fgetc(arquivo_fonte);
     } else {
       info.atomo = IGUAL;
-      strncpy(info.lexema, "=", 1);
-      info.lexema[1] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "=");
     }
     return info;
 
@@ -359,8 +345,7 @@ TInfoAtomo obter_atomo() {
     proximo_char = fgetc(arquivo_fonte);
     if (proximo_char == '=') {
       info.atomo = DIFERENTE;
-      strncpy(info.lexema, "!=", 2);
-      info.lexema[2] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "!=");
       proximo_char = fgetc(arquivo_fonte);
     } else {
       // Erro: operador não reconhecido
@@ -373,8 +358,7 @@ TInfoAtomo obter_atomo() {
     proximo_char = fgetc(arquivo_fonte);
     if (proximo_char == '|') {
       info.atomo = OR;
-      strncpy(info.lexema, "||", 2);
-      info.lexema[2] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "||");
       proximo_char = fgetc(arquivo_fonte);
     } else {
       // Erro: operador não reconhecido
@@ -387,8 +371,7 @@ TInfoAtomo obter_atomo() {
     proximo_char = fgetc(arquivo_fonte);
     if (proximo_char == '&') {
       info.atomo = AND;
-      strncpy(info.lexema, "&&", 2);
-      info.lexema[2] = '\0';
+      snprintf(info.lexema, sizeof(info.lexema), "&&");
       proximo_char = fgetc(arquivo_fonte);
     } else {
       // Erro: operador não reconhecido
@@ -402,56 +385,47 @@ TInfoAtomo obter_atomo() {
   switch (proximo_char) {
   case '(':
     info.atomo = ABRE_PAR;
-    strncpy(info.lexema, "(", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), "(");
     break;
 
   case ')':
     info.atomo = FECHA_PAR;
-    strncpy(info.lexema, ")", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), ")");
     break;
 
   case '{':
     info.atomo = ABRE_CHAVES;
-    strncpy(info.lexema, "{", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), "{");
     break;
 
   case '}':
     info.atomo = FECHA_CHAVES;
-    strncpy(info.lexema, "}", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), "}");
     break;
 
   case ',':
     info.atomo = VIRGULA;
-    strncpy(info.lexema, ",", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), ",");
     break;
 
   case ';':
     info.atomo = PONTO_VIRGULA;
-    strncpy(info.lexema, ";", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), ";");
     break;
 
   case '+':
     info.atomo = MAIS;
-    strncpy(info.lexema, "+", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), "+");
     break;
 
   case '-':
     info.atomo = MENOS;
-    strncpy(info.lexema, "-", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), "-");
     break;
 
   case '*':
     info.atomo = VEZES;
-    strncpy(info.lexema, "*", 1);
-    info.lexema[1] = '\0';
+    snprintf(info.lexema, sizeof(info.lexema), "*");
     break;
 
   default:
