@@ -125,7 +125,16 @@ TInfoAtomo obter_atomo() {
     }
 
     buffer_lexema[i] = '\0';
-    snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
+
+    // Limitando a cópia para 15 caracteres para evitar truncamento
+    if (strlen(buffer_lexema) >= sizeof(info.lexema) - 1) {
+      // Copia apenas o que cabe no campo lexema, deixando espaço para o
+      // terminador nulo
+      strncpy(info.lexema, buffer_lexema, sizeof(info.lexema) - 1);
+      info.lexema[sizeof(info.lexema) - 1] = '\0';
+    } else {
+      strcpy(info.lexema, buffer_lexema);
+    }
 
     // Verifica se é palavra reservada ou identificador
     info.atomo = verifica_palavra_reservada(buffer_lexema);
@@ -155,7 +164,16 @@ TInfoAtomo obter_atomo() {
 
           buffer_lexema[i] = '\0';
           info.atomo = INTCONST;
-          snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
+
+          // Limitando a cópia para 15 caracteres para evitar truncamento
+          if (strlen(buffer_lexema) >= sizeof(info.lexema) - 1) {
+            // Copia apenas o que cabe no campo lexema, deixando espaço para o
+            // terminador nulo
+            strncpy(info.lexema, buffer_lexema, sizeof(info.lexema) - 1);
+            info.lexema[sizeof(info.lexema) - 1] = '\0';
+          } else {
+            strcpy(info.lexema, buffer_lexema);
+          }
 
           // Converte string para valor inteiro
           sscanf(buffer_lexema, "%x", &info.valor_int);
@@ -171,7 +189,17 @@ TInfoAtomo obter_atomo() {
         // É um zero decimal
         buffer_lexema[i] = '\0';
         info.atomo = INTCONST;
-        snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
+
+        // Limitando a cópia para 15 caracteres para evitar truncamento
+        if (strlen(buffer_lexema) >= sizeof(info.lexema) - 1) {
+          // Copia apenas o que cabe no campo lexema, deixando espaço para o
+          // terminador nulo
+          strncpy(info.lexema, buffer_lexema, sizeof(info.lexema) - 1);
+          info.lexema[sizeof(info.lexema) - 1] = '\0';
+        } else {
+          strcpy(info.lexema, buffer_lexema);
+        }
+
         info.valor_int = 0;
 
         // Se não for início de outro token, consome
@@ -192,7 +220,17 @@ TInfoAtomo obter_atomo() {
 
       buffer_lexema[i] = '\0';
       info.atomo = INTCONST;
-      snprintf(info.lexema, sizeof(info.lexema), "%s", buffer_lexema);
+
+      // Limitando a cópia para 15 caracteres para evitar truncamento
+      if (strlen(buffer_lexema) >= sizeof(info.lexema) - 1) {
+        // Copia apenas o que cabe no campo lexema, deixando espaço para o
+        // terminador nulo
+        strncpy(info.lexema, buffer_lexema, sizeof(info.lexema) - 1);
+        info.lexema[sizeof(info.lexema) - 1] = '\0';
+      } else {
+        strcpy(info.lexema, buffer_lexema);
+      }
+
       info.valor_int = atoi(buffer_lexema);
       return info;
     }
