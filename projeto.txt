@@ -154,7 +154,3 @@ gcc -Wall -Wno-unused-result -g -Og compilador.c -o compilador
 	•	Programa que não compila ou executa recebe nota 0.
 	•	Warnings na compilação ou finalização diferente de 0 descontam 1 ponto por warning.
 	•	Código confuso, mal organizado ou não comentado também será penalizado.
-
-⸻
-
-Essas são as principais informações do PDF fornecido. Se precisar de mais detalhes ou esclarecimentos específicos sobre alguma parte do trabalho, estou à disposição!

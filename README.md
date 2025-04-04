@@ -1,9 +1,87 @@
 # Compilador TINY-C
 
-Este é um compilador para a linguagem TINY-C, desenvolvido como projeto para a disciplina de Compiladores.
+Este documento explica o trabalho de desenvolvimento do compilador para a linguagem TINY-C, desenvolvido como projeto para a disciplina de Compiladores.
 
 ## Autores
-- Marcello Gonzatto Birkan & Daniela Brazolin Flauto
+- Marcello Gonzatto Birkan (10381938) & Daniela Brazolin Flauto (10395891)
+
+## Partes Concluídas do Projeto
+
+### Análise Léxica (100% concluída)
+- Implementação completa do reconhecimento de todos os átomos da linguagem TINY-C
+- Tratamento de tokens, incluindo palavras reservadas, identificadores, constantes, operadores e símbolos
+- Reconhecimento de constantes inteiras em formato hexadecimal
+- Tratamento de comentários (linha e bloco)
+- Contagem de linhas e tracking da posição no código-fonte
+- Detecção e relato de erros léxicos
+
+### Análise Sintática (100% concluída)
+- Implementação do analisador sintático por descida recursiva (Recursive Descent Parser)
+- Suporte à gramática completa da linguagem TINY-C conforme especificada
+- Análise de declarações de variáveis, comandos condicionais e de repetição
+- Tratamento de expressões com níveis de precedência
+- Detecção e relato detalhado de erros sintáticos
+
+### Programa Principal (100% concluído)
+- Interface para leitura do arquivo fonte
+- Integração entre os analisadores léxico e sintático
+- Relato de informações durante a análise
+- Contagem e exibição do total de linhas analisadas
+
+## Bugs e Limitações Conhecidas
+
+1. **Tratamento de identificadores longos**: Identificadores com mais de 15 caracteres são rejeitados conforme especificação, porém pode haver casos em que a mensagem de erro não é suficientemente clara.
+
+2. **Comentários de bloco não fechados**: O analisador léxico não reporta adequadamente comentários de bloco (`/* */`) que não são fechados antes do fim do arquivo.
+
+3. **Constantes caractere com escape**: Não há suporte para caracteres de escape em constantes caractere (por exemplo, `'\n'`), apenas caracteres ASCII simples.
+
+4. **Mensagens de erro**: Embora funcionais, algumas mensagens de erro poderiam ser mais descritivas para auxiliar o usuário a encontrar e corrigir problemas.
+
+## Decisões de Design e Implementação
+
+### Organização do Código
+- **Uso de arquivos de cabeçalho**: Implementamos interfaces claras através de arquivos .h para cada módulo.
+
+### Analisador Léxico
+- **Tabela de palavras reservadas**: Utilizamos uma estrutura estática para armazenar as palavras reservadas, facilitando a verificação.
+- **Buffer de lexema**: Implementamos um buffer para armazenar temporariamente os lexemas durante o reconhecimento, otimizando o processo.
+- **Função de conversão para string**: Criamos a função `atomo_para_string` para facilitar a exibição de mensagens durante a análise.
+
+### Analisador Sintático
+- **Funções recursivas para não-terminais**: Cada símbolo não-terminal da gramática foi implementado como uma função separada, tornando a implementação mais clara e alinhada com a especificação da gramática.
+- **Função consome()**: Centralizamos a verificação e consumo de átomos em uma única função, simplificando o tratamento de erros.
+- **Variável lookahead**: Utilizamos uma variável global para armazenar o próximo átomo a ser analisado, implementando um mecanismo simples de lookahead.
+
+### Tratamento de Erros
+- **Mensagens**: Implementamos mensagens que mostram a linha, o átomo esperado e o encontrado, auxiliando na depuração.
+- **Parada após erro**: Optamos por encerrar a análise após o primeiro erro, já que a recuperação de erro não era um requisito do projeto.
+
+## Possíveis Melhorias Futuras
+- Implementação de um mecanismo de recuperação de erros para permitir a detecção de múltiplos erros em uma única execução
+- Melhorias nas mensagens de erro para torná-las mais informativas
+- Suporte a caracteres de escape em constantes caractere
+- Implementação das fases seguintes do compilador (análise semântica e geração de código)
+
+## Uso
+
+Para compilar o compilador TINY-C:
+
+```bash
+make
+```
+
+Para executar a análise em um arquivo TINY-C:
+
+```bash
+./bin/compilador <arquivo_fonte>
+```
+
+## Exemplo de Execução
+
+Abaixo está uma imagem mostrando a execução do compilador em um dos arquivos de teste:
+
+![Exemplo de execução do compilador TINY-C](teste_projeto.png)
 
 ## Descrição do Projeto
 
@@ -39,26 +117,6 @@ O projeto está organizado da seguinte forma:
 - `bin/`: Diretório onde é gerado o executável do compilador
 - `Makefile`: Arquivo para automatizar a compilação
 - `projeto.txt`: Documentação detalhada das especificações do projeto
-
-## Compilação
-
-Para compilar o compilador TINY-C, execute o comando:
-
-```bash
-make
-```
-
-Isso irá gerar o executável `bin/compilador`.
-
-## Uso
-
-Para utilizar o compilador TINY-C, execute:
-
-```bash
-./bin/compilador <arquivo_fonte>
-```
-
-Onde `<arquivo_fonte>` é o caminho para um arquivo fonte em TINY-C com extensão `.tc`.
 
 ## Gramática da Linguagem TINY-C
 
