@@ -1,6 +1,6 @@
 /*
  * Compilador para a linguagem TINY-C
- * Implementação das fases de análise léxica e sintática
+ * Implementação das fases de análise léxica, sintática, semântica e geração de código
  *
  * Autores:
  * - Marcello Gonzatto Birkan
@@ -9,13 +9,14 @@
 
 #include "lexico.h"
 #include "sintatico.h"
+#include "semantico.h"
+#include "gerador.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main(int argc, char *argv[]) {
   FILE *arquivo_fonte;
-  int total_linhas = 0;
 
   // Verifica se foi informado o nome do arquivo fonte
   if (argc != 2) {
@@ -32,28 +33,18 @@ int main(int argc, char *argv[]) {
 
   // Inicializa os analisadores
   inicializa_lexico(arquivo_fonte);
+  inicializa_semantico();
+  inicializa_gerador();
   inicializa_sintatico();
 
-  // Inicia a análise sintática
+  // Inicia a análise sintática e geração de código
   program();
 
   // Verifica se chegou ao fim do arquivo
   consome(EOS);
 
-  // Conta o número de linhas do arquivo
-  rewind(arquivo_fonte);
-  char c;
-  total_linhas = 0; // Inicializa contador
-  while ((c = fgetc(arquivo_fonte)) != EOF) {
-    if (c == '\n') {
-      total_linhas++;
-    }
-  }
-  total_linhas++; // Incrementa 1 para contar a última linha que pode não ter \n
-
-  // Informa o total de linhas analisadas
-  printf("%d linhas analisadas, programa sintaticamente correto\n",
-         total_linhas);
+  // Finaliza os analisadores
+  finaliza_semantico();
 
   // Fecha o arquivo fonte
   fclose(arquivo_fonte);

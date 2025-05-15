@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -Wall -Wno-unused-result -g -Og
 SRC_DIR = src
 BIN_DIR = bin
-SRCS = $(SRC_DIR)/compilador.c $(SRC_DIR)/lexico.c $(SRC_DIR)/sintatico.c
+SRCS = $(SRC_DIR)/compilador.c $(SRC_DIR)/lexico.c $(SRC_DIR)/sintatico.c $(SRC_DIR)/semantico.c $(SRC_DIR)/gerador.c
 OBJS = $(SRCS:.c=.o)
 TARGET = $(BIN_DIR)/compilador
 
@@ -21,4 +21,4 @@ $(TARGET): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
-	rm -rf $(BIN_DIR) 
+	rm -rf $(BIN_DIR)

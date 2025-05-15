@@ -1,6 +1,6 @@
 /*
  * Analisador Sintático para o compilador TINY-C
- * Implementação da fase de análise sintática
+ * Implementação da fase de análise sintática, semântica e geração de código
  *
  * Autores:
  * - Marcello Gonzatto Birkan
@@ -8,12 +8,16 @@
  */
 
 #include "sintatico.h"
+#include "semantico.h"
+#include "gerador.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Variáveis globais
 static TAtomo lookahead;
 static TInfoAtomo info_atomo;
+static int num_variaveis = 0;
 
 // Inicializa o analisador sintático
 void inicializa_sintatico() {
@@ -43,7 +47,8 @@ void consome(TAtomo atomo_esperado) {
   }
 
   if (lookahead == atomo_esperado) {
-    // Imprime o átomo atual
+    // Imprime o átomo atual (comentado para não interferir na saída MEPA)
+    /*
     printf("# %d:%s", info_atomo.linha, atomo_para_string(info_atomo.atomo));
 
     // Adiciona informações extras dependendo do tipo de átomo
@@ -56,12 +61,13 @@ void consome(TAtomo atomo_esperado) {
     }
 
     printf("\n");
+    */
 
     // Obtém o próximo átomo, ignorando comentários
     do {
       info_atomo = obter_atomo();
       if (info_atomo.atomo == COMENTARIO) {
-        printf("# %d:comentario\n", info_atomo.linha);
+        // printf("# %d:comentario\n", info_atomo.linha);
       }
     } while (info_atomo.atomo == COMENTARIO);
 
@@ -77,12 +83,19 @@ void consome(TAtomo atomo_esperado) {
 
 // <program> ::= void main '(' void ')' <compound_stmt>
 void program() {
+  gera_inicio_programa();  // INPP
+  
   consome(VOID);
   consome(MAIN);
   consome(ABRE_PAR);
   consome(VOID);
   consome(FECHA_PAR);
   compound_stmt();
+  
+  gera_fim_programa();     // PARA
+  
+  // Imprime a tabela de símbolos
+  imprime_tabela_simbolos();
 }
 
 // <compound_stmt> ::= '{' [ <var_decl> <stmt> ] '}'
@@ -123,21 +136,41 @@ void type_specifier() {
 
 // <var_decl_list> ::= <variable_id> { ',' <variable_id> }
 void var_decl_list() {
+  // Conta o número de variáveis declaradas antes de começar
+  int variaveis_iniciais = num_variaveis;
+  
   variable_id();
+  num_variaveis++;  // Incrementa contador de variáveis
 
   while (lookahead == VIRGULA) {
     consome(VIRGULA);
     variable_id();
+    num_variaveis++;  // Incrementa contador de variáveis
   }
+  
+  // Gera código para alocar memória para as variáveis declaradas nesta lista
+  gera_alocacao_memoria(num_variaveis - variaveis_iniciais);
 }
 
 // <variable_id> ::= id [ '=' <expr> ]
 void variable_id() {
+  char id[16];
+  strcpy(id, info_atomo.lexema);  // Salva o nome da variável
+  
   consome(IDENTIFICADOR);
+  
+  // Verifica se o ID já existe e adiciona à tabela de símbolos
+  if (!insere_tabela_simbolos(id)) {
+    printf("# %d:erro semantico, variavel '%s' ja declarada\n", info_atomo.linha, id);
+    exit(1);
+  }
+  
+  int endereco = busca_tabela_simbolos(id);  // Obtém o endereço da variável
 
   if (lookahead == IGUAL) {
     consome(IGUAL);
     expr();
+    gera_armazenar_valor(endereco);  // ARMZ
   }
 }
 
@@ -164,9 +197,23 @@ void stmt() {
   case READINT:
     consome(READINT);
     consome(ABRE_PAR);
+    
+    // Verifica se a variável existe e obtém seu endereço
+    char id[16];
+    strcpy(id, info_atomo.lexema);
     consome(IDENTIFICADOR);
+    
+    int endereco = busca_tabela_simbolos(id);
+    if (endereco == -1) {
+      printf("# %d:erro semantico, variavel '%s' nao declarada\n", info_atomo.linha, id);
+      exit(1);
+    }
+    
     consome(FECHA_PAR);
     consome(PONTO_VIRGULA);
+    
+    gera_entrada();              // LEIT
+    gera_armazenar_valor(endereco);  // ARMZ
     break;
 
   case WRITEINT:
@@ -175,6 +222,8 @@ void stmt() {
     expr();
     consome(FECHA_PAR);
     consome(PONTO_VIRGULA);
+    
+    gera_saida();  // IMPR
     break;
 
   default:
@@ -187,33 +236,68 @@ void stmt() {
 
 // <assig_stmt> ::= id '=' <expr> ';'
 void assig_stmt() {
+  char id[16];
+  strcpy(id, info_atomo.lexema);  // Salva o nome da variável
+  
   consome(IDENTIFICADOR);
+  
+  // Verifica se a variável existe e obtém seu endereço
+  int endereco = busca_tabela_simbolos(id);
+  if (endereco == -1) {
+    printf("# %d:erro semantico, variavel '%s' nao declarada\n", info_atomo.linha, id);
+    exit(1);
+  }
+  
   consome(IGUAL);
   expr();
   consome(PONTO_VIRGULA);
+  
+  gera_armazenar_valor(endereco);  // ARMZ
 }
 
 // <cond_stmt> ::= if '(' expr ')' <stmt> [ else <stmt> ]
 void cond_stmt() {
+  int L1 = proximo_rotulo();
+  int L2 = proximo_rotulo();
+  
   consome(IF);
   consome(ABRE_PAR);
   expr();
   consome(FECHA_PAR);
+  
+  gera_desvio_se_falso(L1);  // DSVF L1
+  
   stmt();
-
+  
+  gera_desvio_incondicional(L2);  // DSVS L2
+  gera_nada(L1);  // L1: NADA
+  
   if (lookahead == ELSE) {
     consome(ELSE);
     stmt();
   }
+  
+  gera_nada(L2);  // L2: NADA
 }
 
 // <while_stmt> ::= while '(' expr ')' <stmt>
 void while_stmt() {
+  int L1 = proximo_rotulo();
+  int L2 = proximo_rotulo();
+  
+  gera_nada(L1);  // L1: NADA
+  
   consome(WHILE);
   consome(ABRE_PAR);
   expr();
   consome(FECHA_PAR);
+  
+  gera_desvio_se_falso(L2);  // DSVF L2
+  
   stmt();
+  
+  gera_desvio_incondicional(L1);  // DSVS L1
+  gera_nada(L2);  // L2: NADA
 }
 
 // <expr> ::= <conjunction> { '||' <conjunction> }
@@ -223,6 +307,7 @@ void expr() {
   while (lookahead == OR) {
     consome(OR);
     conjunction();
+    gera_ou();  // DISJ
   }
 }
 
@@ -233,6 +318,7 @@ void conjunction() {
   while (lookahead == AND) {
     consome(AND);
     comparison();
+    gera_e();  // CONJ
   }
 }
 
@@ -243,8 +329,39 @@ void comparison() {
   if (lookahead == MENOR || lookahead == MENOR_IGUAL ||
       lookahead == IGUAL_IGUAL || lookahead == DIFERENTE ||
       lookahead == MAIOR || lookahead == MAIOR_IGUAL) {
+    
+    TAtomo op = lookahead;  // Salva o operador de comparação
+    
     relation();
     sum();
+    
+    // Gera código para a operação de comparação adequada
+    switch (op) {
+      case MENOR:
+        gera_menor();  // CMME
+        break;
+      case MENOR_IGUAL:
+        gera_menor_igual();  // CMEG
+        break;
+      case IGUAL_IGUAL:
+        gera_igual();  // CMIG
+        break;
+      case DIFERENTE:
+        gera_diferente();  // CMDG
+        break;
+      case MAIOR:
+        gera_maior();  // CMMA
+        break;
+      case MAIOR_IGUAL:
+        gera_maior_igual();  // CMAG
+        break;
+      default:
+        // Este caso não deveria ocorrer, pois já verificamos acima
+        // se o operador é um dos operadores de comparação válidos
+        printf("# Erro interno: operador relacional não reconhecido\n");
+        exit(1);
+        break;
+    }
   }
 }
 
@@ -290,10 +407,13 @@ void sum() {
   while (lookahead == MAIS || lookahead == MENOS) {
     if (lookahead == MAIS) {
       consome(MAIS);
+      term();
+      gera_soma();  // SOMA
     } else {
       consome(MENOS);
+      term();
+      gera_subtracao();  // SUBT
     }
-    term();
   }
 }
 
@@ -304,10 +424,13 @@ void term() {
   while (lookahead == VEZES || lookahead == DIVIDE) {
     if (lookahead == VEZES) {
       consome(VEZES);
+      factor();
+      gera_multiplicacao();  // MULT
     } else {
       consome(DIVIDE);
+      factor();
+      gera_divisao();  // DIVI
     }
-    factor();
   }
 }
 
@@ -315,16 +438,30 @@ void term() {
 void factor() {
   switch (lookahead) {
   case INTCONST:
+    gera_carregar_constante(info_atomo.valor_int);  // CRCT
     consome(INTCONST);
     break;
 
   case CHARCONST:
+    gera_carregar_constante((int)info_atomo.valor_char);  // CRCT para char
     consome(CHARCONST);
     break;
 
-  case IDENTIFICADOR:
+  case IDENTIFICADOR: {
+    char id[16];
+    strcpy(id, info_atomo.lexema);  // Salva o nome da variável
+    
+    // Verifica se a variável existe e obtém seu endereço
+    int endereco = busca_tabela_simbolos(id);
+    if (endereco == -1) {
+      printf("# %d:erro semantico, variavel '%s' nao declarada\n", info_atomo.linha, id);
+      exit(1);
+    }
+    
+    gera_carregar_valor(endereco);  // CRVL
     consome(IDENTIFICADOR);
     break;
+  }
 
   case ABRE_PAR:
     consome(ABRE_PAR);
