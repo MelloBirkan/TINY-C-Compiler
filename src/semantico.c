@@ -25,7 +25,7 @@ void inicializa_semantico() {
 
 // Insere uma variável na tabela de símbolos
 int insere_tabela_simbolos(const char *id) {
-    TNo *novo, *atual, *anterior;
+    TNo *novo, *atual, *anterior = NULL;
     
     // Verifica se o identificador já existe na tabela
     if (busca_tabela_simbolos(id) != -1) {
