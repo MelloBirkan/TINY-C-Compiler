@@ -25,7 +25,7 @@ void inicializa_sintatico() {
   do {
     info_atomo = obter_atomo();
     if (info_atomo.atomo == COMENTARIO) {
-      printf("# %d:comentario\n", info_atomo.linha);
+      // printf("# %d:comentario\n", info_atomo.linha);
     }
   } while (info_atomo.atomo == COMENTARIO);
 
@@ -102,15 +102,19 @@ void program() {
 void compound_stmt() {
   consome(ABRE_CHAVES);
 
-  // Verifica se há declarações de variáveis ou instruções
+  int variaveis_antes = num_variaveis;
+  
+  while ((lookahead == INT || lookahead == CHAR) && lookahead != EOS) {
+    var_decl();
+  }
+  
+  int total_variaveis = num_variaveis - variaveis_antes;
+  if (total_variaveis > 0) {
+    gera_alocacao_memoria(total_variaveis);
+  }
+  
   while (lookahead != FECHA_CHAVES && lookahead != EOS) {
-    // Declarações de variáveis
-    if (lookahead == INT || lookahead == CHAR) {
-      var_decl();
-    } else {
-      // Instruções
-      stmt();
-    }
+    stmt();
   }
 
   consome(FECHA_CHAVES);
@@ -136,9 +140,6 @@ void type_specifier() {
 
 // <var_decl_list> ::= <variable_id> { ',' <variable_id> }
 void var_decl_list() {
-  // Conta o número de variáveis declaradas antes de começar
-  int variaveis_iniciais = num_variaveis;
-  
   variable_id();
   num_variaveis++;  // Incrementa contador de variáveis
 
@@ -148,8 +149,6 @@ void var_decl_list() {
     num_variaveis++;  // Incrementa contador de variáveis
   }
   
-  // Gera código para alocar memória para as variáveis declaradas nesta lista
-  gera_alocacao_memoria(num_variaveis - variaveis_iniciais);
 }
 
 // <variable_id> ::= id [ '=' <expr> ]
